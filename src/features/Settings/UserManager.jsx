@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Users, ShieldCheck, UserPlus, Search, Filter, MoreVertical, Edit2, Lock, Unlock, UserMinus } from 'lucide-react';
 import { MOCK_USERS, PERMISSIONS_LIST } from '../../data/mockData';
-import UserList from './components/UserList';
-import RoleMatrix from './components/RoleMatrix';
+import UserList from './Components/UserList';
+import RoleMatrix from './Components/RoleMatrix';
 
 export default function UserManager({ activeRole }) {
   const [activeTab, setActiveTab] = useState('users'); // 'users' or 'roles'
