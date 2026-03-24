@@ -186,29 +186,33 @@ export const PERMISSIONS_LIST = [
 
 export const MOCK_PROD_ORDERS = [
   {
-    id: 'PRD-2024-001',
-    date: '2024-05-20T10:30:00Z',
-    author: 'Գլխավոր պահեստապետ (Demo)',
-    status: 'Ընթացքի մեջ',
+    id: 'PRD-AW-001',
+    date: new Date().toISOString(),
+    author: 'Համակարգ (Շաբաթվա պլան)',
+    comment: 'Ավտոմատ գեներացված շաբաթվա պլանից',
+    status: 'Սպասման մեջ',
     products: [
-      { id: 'p1', name: 'Արևածաղիկ 100գ աղի', plannedQty: 500, unit: 'հատ',
-        actualQty: 50, history: [{ date: '2026-03-23T12:53:29Z', qty: 50 }] }
+      { id: 'I1', prodId: 'P001', name: 'Արևածաղիկ 100գ դասական', plannedQty: 1000, actualQty: 0, sentQty: 0, acceptedQty: 0, unit: 'տուփ' }
     ],
-    transitMaterials: [
-      { name: 'Հումք Արևածաղիկ', requested: 100, received: 100, unit: 'կգ', status: 'Ընդունված' },
-      { name: 'Աղ (Յոդացված)', requested: 5, received: 5, unit: 'կգ', status: 'Ընդունված' }
+    transits: [
+      { id: 'T1', materialId: 'A123', name: 'Արևածաղիկ', requestedQty: 100, unit: 'կգ', status: 'Ընդունված' }
+    ],
+    logs: [
+      { date: new Date().toISOString(), user: 'Համակարգ', action: 'Պատվերը ստեղծվել է ավտոմատ' }
     ]
   },
   {
-    id: 'PRD-2024-002',
-    date: '2024-05-21T09:00:00Z',
+    id: 'PRD-MN-002',
+    date: new Date(Date.now() - 86400000).toISOString(),
     author: 'Տեսակի պատասխանատու',
-    status: 'Սպասման մեջ',
+    comment: 'Շտապ պատվեր պլանից դուրս',
+    status: 'Հաստատման ենթակա',
     products: [
-      { id: 'ITEM-004', name: 'Արևածաղիկ 100գ դասական', plannedQty: 1000, unit: 'տուփ', actualQty: 0, history: [] }
+      { id: 'I2', prodId: 'P002', name: 'Արևածաղիկ 100գ աղի', plannedQty: 500, actualQty: 0, sentQty: 0, acceptedQty: 0, unit: 'տուփ' }
     ],
-    transitMaterials: [
-      { name: 'Կարտոֆիլի փոշի', requested: 300, received: 0, unit: 'կգ', status: 'Տրանզիտ' }
+    transits: [],
+    logs: [
+      { date: new Date(Date.now() - 86400000).toISOString(), user: 'Տեսակի պատասխանատու', action: 'Ստեղծվել է ձեռքով: Սպասում է գլխավոր հաստատման:' }
     ]
   }
 ];
