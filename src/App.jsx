@@ -9,7 +9,10 @@ import InventoryManager from './features/Inventory/InventoryManager';
 import NotificationsManager from './features/Notifications/NotificationsManager';
 import ReportsManager from './features/Reports/ReportsManager';
 import UserManager from './features/Settings/UserManager';
+import DirectoryManager from './features/Directory/DirectoryManager';
+import SalesManager from './features/Sales/SalesManager';
 import Sidebar from './components/Sidebar';
+import { MOCK_PROD_ORDERS } from './data/mockData';
 
 export const ROLES = [
   'Սուպերադմին',
@@ -33,6 +36,9 @@ function App() {
   const [activeView, setActiveView] = useState('warehouses'); // 'warehouses' | 'weekly-plan' | 'sourcing' | 'inbound' | 'production' | 'calculator' | 'inventory' | 'notifications'
   const [activeRole, setActiveRole] = useState(ROLES[1]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Global State for Production Orders
+  const [productionOrders, setProductionOrders] = useState(MOCK_PROD_ORDERS);
 
   // Notifications State
   const [notifications, setNotifications] = useState(INITIAL_NOTS);
@@ -77,10 +83,10 @@ function App() {
              unreadCount={notifications.filter(n => !n.read).length}
           />
         )}
-        {activeView === 'weekly-plan' && <WeeklyPlanManager activeRole={activeRole} />}
+        {activeView === 'weekly-plan' && <WeeklyPlanManager activeRole={activeRole} productionOrders={productionOrders} setProductionOrders={setProductionOrders} />}
         {activeView === 'sourcing' && <SourcingManager activeRole={activeRole} />}
         {activeView === 'inbound' && <InboundManager activeRole={activeRole} />}
-        {activeView === 'production' && <ProductionManager activeRole={activeRole} />}
+        {activeView === 'production' && <ProductionManager activeRole={activeRole} orders={productionOrders} setOrders={setProductionOrders} />}
         {activeView === 'calculator' && <CalculatorManager activeRole={activeRole} />}
         {activeView === 'inventory' && <InventoryManager activeRole={activeRole} />}
         {activeView === 'notifications' && (
@@ -93,9 +99,11 @@ function App() {
         )}
         {activeView === 'reports' && <ReportsManager activeRole={activeRole} />}
         {activeView === 'settings' && <UserManager activeRole={activeRole} />}
+        {activeView === 'directory' && <DirectoryManager activeRole={activeRole} />}
+        {activeView === 'sales' && <SalesManager activeRole={activeRole} />}
         
         {/* Fallback for undeveloped sections */}
-        {activeView !== 'warehouses' && activeView !== 'weekly-plan' && activeView !== 'sourcing' && activeView !== 'inbound' && activeView !== 'production' && activeView !== 'calculator' && activeView !== 'inventory' && activeView !== 'notifications' && activeView !== 'reports' && activeView !== 'settings' && (
+        {activeView !== 'warehouses' && activeView !== 'weekly-plan' && activeView !== 'sourcing' && activeView !== 'inbound' && activeView !== 'production' && activeView !== 'calculator' && activeView !== 'inventory' && activeView !== 'notifications' && activeView !== 'reports' && activeView !== 'settings' && activeView !== 'directory' && activeView !== 'sales' && (
           <div className="flex items-center justify-center h-full w-full text-slate-400 font-medium">
             Այս բաժինը դեռ մշակման փուլում է... (Section under development)
           </div>

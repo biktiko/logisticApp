@@ -164,13 +164,15 @@ export const MOCK_USERS = [
 ];
 
 export const PERMISSIONS_LIST = [
-  { id: 'USER_VIEW', label: 'Տեսնել օգտատերերի ցանկը', category: 'Ա. Օգտատերերի Կառավարում' },
-  { id: 'USER_MANAGE', label: 'Ավելացնել, խմբագրել կամ արգելափակել օգտատերերին', category: 'Ա. Օգտատերերի Կառավարում' },
-  { id: 'ROLE_MANAGE', label: 'Ստեղծել և խմբագրել դերերն ու իրավասությունները', category: 'Ա. Օգտատերերի Կառավարում' },
-  { id: 'CAT_VIEW', label: 'Դիտել տեսակների ցանկը', category: 'Բ. տեսակ և Ապրանքներ' },
-  { id: 'CAT_MANAGE', label: 'Ստեղծել և խմբագրել տեսակ', category: 'Բ. տեսակ և Ապրանքներ' },
-  { id: 'PRD_VIEW', label: 'Դիտել ապրանքների բազան', category: 'Բ. տեսակ և Ապրանքներ' },
-  { id: 'PRD_CREATE', label: 'Ավելացնել նոր հումք կամ պրոդուկտ', category: 'Բ. տեսակ և Ապրանքներ' },
+  { id: 'USER_VIEW', category: 'Օգտատերերի Կառավարում', name: 'Օգտատերերի դիտում' },
+  { id: 'USER_EDIT', category: 'Օգտատերերի Կառավարում', name: 'Օգտատերերի խմբագրում / դերերի փոփոխում' },
+  { id: 'ROLE_MANAGE', category: 'Օգտատերերի Կառավարում', name: 'Դերերի և նրանց իրավասությունների ստեղծում / ջնջում' },
+  { id: 'CATALOG_VIEW', category: 'Կատալոգ և Պրոդուկտներ', name: 'Կատալոգի դիտում (միայն իր տեսակի)' },
+  { id: 'CATALOG_GLOBAL', category: 'Կատալոգ և Պրոդուկտներ', name: 'Բոլոր տեսակների ապրանքների դիտում' },
+  { id: 'STOCK_VIEW', category: 'Պահեստներ', name: 'Իր պահեստի տվյալների դիտում' },
+  { id: 'STOCK_GLOBAL', category: 'Պահեստներ', name: 'Բոլոր պահեստների դիտում' },
+  { id: 'PROD_PLAN_CREATE', category: 'Արտադրություն', name: 'Շաբաթվա պլանի կազմում (իր տեսակի)' },
+  { id: 'PROD_PLAN_APPROVE', category: 'Արտադրություն', name: 'Շաբաթվա պլանի հաստատում' },
   { id: 'BOM_VIEW', label: 'Դիտել պրոդուկտների բաղադրությունը', category: 'Բ. տեսակ և Ապրանքներ' },
   { id: 'BOM_EDIT', label: 'Ստեղծել և փոփոխել պրոդուկտի բաղադրությունը', category: 'Բ. տեսակ և Ապրանքներ' },
   { id: 'STK_VIEW_ALL', label: 'Տեսնել բոլոր պահեստների մնացորդները', category: 'Գ. Պահեստ և Մնացորդներ' },
@@ -180,5 +182,34 @@ export const PERMISSIONS_LIST = [
   { id: 'PROD_START', label: 'Սկսել արտադրական պրոցեսը', category: 'Ե. Արտադրություն' },
   { id: 'SALE_ORDER_CREATE', label: 'Ձևակերպել արտահանման պատվեր', category: 'Զ. Վաճառք և Արտահանում' },
   { id: 'INV_START', label: 'Նախաձեռնել գույքագրման պրոցես', category: 'Է. Գույքագրում' },
+];
+
+export const MOCK_PROD_ORDERS = [
+  {
+    id: 'PRD-2024-001',
+    date: '2024-05-20T10:30:00Z',
+    author: 'Գլխավոր պահեստապետ (Demo)',
+    status: 'Ընթացքի մեջ',
+    products: [
+      { id: 'p1', name: 'Արևածաղիկ 100գ աղի', plannedQty: 500, unit: 'հատ',
+        actualQty: 50, history: [{ date: '2026-03-23T12:53:29Z', qty: 50 }] }
+    ],
+    transitMaterials: [
+      { name: 'Հումք Արևածաղիկ', requested: 100, received: 100, unit: 'կգ', status: 'Ընդունված' },
+      { name: 'Աղ (Յոդացված)', requested: 5, received: 5, unit: 'կգ', status: 'Ընդունված' }
+    ]
+  },
+  {
+    id: 'PRD-2024-002',
+    date: '2024-05-21T09:00:00Z',
+    author: 'Տեսակի պատասխանատու',
+    status: 'Սպասման մեջ',
+    products: [
+      { id: 'ITEM-004', name: 'Արևածաղիկ 100գ դասական', plannedQty: 1000, unit: 'տուփ', actualQty: 0, history: [] }
+    ],
+    transitMaterials: [
+      { name: 'Կարտոֆիլի փոշի', requested: 300, received: 0, unit: 'կգ', status: 'Տրանզիտ' }
+    ]
+  }
 ];
 

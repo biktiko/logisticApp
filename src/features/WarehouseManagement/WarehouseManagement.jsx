@@ -4,6 +4,7 @@ import DataTable from './components/DataTable';
 import MovementsTable from './components/MovementsTable';
 import TransferModal from './components/TransferModal';
 import { INITIAL_STOCK, WAREHOUSE_OPTIONS, INITIAL_TICKETS } from '../../data/mockData';
+import { Search, Filter } from 'lucide-react';
 
 export default function WarehouseManagement({ activeRole, onNavigate, unreadCount }) {
   const [items, setItems] = useState(INITIAL_STOCK);
@@ -195,9 +196,50 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
           showFilter={showFilters}
         />
         
+        {/* Navigation & Search Bar */}
+        <div className="px-8 pt-4 pb-0 bg-white border-b border-slate-200 shadow-sm z-10 flex items-end justify-between">
+          <div className="flex gap-6">
+            <button 
+              className={`pb-3 px-2 border-b-2 font-black transition-colors ${activeTab === 'Պահեստ' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-400 hover:text-slate-800'}`}
+              onClick={() => setActiveTab('Պահեստ')}
+            >
+              Պահեստ
+            </button>
+            <button 
+              className={`pb-3 px-2 border-b-2 font-black transition-colors ${activeTab === 'Շարժեր' ? 'border-blue-600 text-blue-700' : 'border-transparent text-slate-400 hover:text-slate-800'}`}
+              onClick={() => setActiveTab('Շարժեր')}
+            >
+               Տեղափոխություններ
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-3 pb-2">
+             {/* Search Bar */}
+             <div className="relative w-72">
+               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                 <Search className="h-4 w-4 text-slate-400" />
+               </div>
+               <input
+                 type="text"
+                 className="block w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-lg bg-slate-50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 sm:text-sm transition-all text-slate-800 font-medium"
+                 placeholder="Որոնել..."
+                 value={searchQuery}
+                 onChange={(e) => setSearchQuery(e.target.value)}
+               />
+             </div>
+             {/* Filter Toggle */}
+             <button 
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-bold transition-all ${showFilters ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}
+             >
+                <Filter size={16} /> Ֆիլտր
+             </button>
+          </div>
+        </div>
+
         {/* Advanced Filters Panel */}
         {showFilters && (
-          <div className="bg-white border-b border-slate-200 px-8 py-4 shadow-sm z-20 flex gap-6 animate-in slide-in-from-top-2">
+          <div className="bg-slate-50/80 border-b border-slate-200 px-8 py-4 shadow-inner z-0 flex gap-6 animate-in slide-in-from-top-2">
             {activeTab === 'Պահեստ' ? (
               <React.Fragment>
                 <div className="flex flex-col gap-1.5">
@@ -205,7 +247,7 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
                   <select 
                     value={filters.type} 
                     onChange={e => setFilters({...filters, type: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px]"
+                    className="bg-white border border-slate-200 text-sm font-bold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px] shadow-sm"
                   >
                     <option value="">Բոլորը</option>
                     <option value="Հումք">Հումք</option>
@@ -217,7 +259,7 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
                   <select 
                     value={filters.category} 
                     onChange={e => setFilters({...filters, category: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px]"
+                    className="bg-white border border-slate-200 text-sm font-bold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[160px] shadow-sm"
                   >
                     <option value="">Բոլորը</option>
                     <option value="Փաթեթավորում">Փաթեթավորում</option>
@@ -232,7 +274,7 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
                   <select 
                     value={filters.status} 
                     onChange={e => setFilters({...filters, status: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px]"
+                    className="bg-white border border-slate-200 text-sm font-bold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px] shadow-sm"
                   >
                     <option value="">Բոլորը</option>
                     <option value="Նորմալ">Նորմալ</option>
@@ -247,7 +289,7 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
                   <select 
                     value={filters.movementType} 
                     onChange={e => setFilters({...filters, movementType: e.target.value})}
-                    className="bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px]"
+                    className="bg-white border border-slate-200 text-sm font-bold text-slate-700 py-1.5 px-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 min-w-[140px] shadow-sm"
                   >
                     <option value="">Ամբողջը</option>
                     <option value="Մուտք">Մուտք (+)</option>
@@ -260,29 +302,13 @@ export default function WarehouseManagement({ activeRole, onNavigate, unreadCoun
             <div className="ml-auto flex items-end">
               <button 
                 onClick={() => setFilters({ type: '', category: '', status: '', movementType: '' })}
-                className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-widest px-4 py-2 bg-blue-50 rounded-lg"
+                className="text-xs font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-widest px-4 py-2 bg-blue-100/50 hover:bg-blue-100 rounded-lg shadow-sm"
               >
                 Մաքրել Ֆիլտրերը
               </button>
             </div>
           </div>
         )}
-
-        {/* Navigation Tabs */}
-        <div className="px-8 pt-4 pb-0 bg-white border-b border-slate-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] z-10 flex gap-4">
-          <button 
-            className={`pb-3 px-2 border-b-2 font-medium transition-colors ${activeTab === 'Պահեստ' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
-            onClick={() => setActiveTab('Պահեստ')}
-          >
-            Պահեստ
-          </button>
-          <button 
-            className={`pb-3 px-2 border-b-2 font-medium transition-colors ${activeTab === 'Շարժեր' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
-            onClick={() => setActiveTab('Շարժեր')}
-          >
-             Տեղափոխություններ
-          </button>
-        </div>
 
         {/* Tab Content Area */}
         {activeTab === 'Պահեստ' ? (

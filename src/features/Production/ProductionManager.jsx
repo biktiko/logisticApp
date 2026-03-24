@@ -55,8 +55,7 @@ const MOCK_PROD_WAREHOUSE = [
   { name: 'Արևածաղիկ 50գ աղի', qty: 850, unit: 'հատ', type: 'ԱՐՏԱԴՐԱՆՔ' }
 ];
 
-export default function ProductionManager({ activeRole }) {
-  const [orders, setOrders] = useState(INITIAL_ORDERS);
+export default function ProductionManager({ activeRole, orders, setOrders }) {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('Բոլորը');
   

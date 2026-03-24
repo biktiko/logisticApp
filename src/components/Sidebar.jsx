@@ -12,7 +12,9 @@ import {
   PackagePlus,
   ChevronLeft,
   ChevronRight,
-  Factory
+  Factory,
+  Database,
+  Globe
 } from 'lucide-react';
 
 const MENU_ITEMS = [
@@ -22,19 +24,24 @@ const MENU_ITEMS = [
   { id: 'inbound', label: 'Մուտքագրումներ', icon: PackagePlus },
   { id: 'production', label: 'Արտադրություն', icon: Factory },
   { id: 'inventory', label: 'Գույքագրումներ', icon: ClipboardCheck },
+  { id: 'sales', label: 'Արտահանում', icon: Globe },
   { id: 'reports', label: 'Հաշվետվություններ', icon: BarChart3 },
   { id: 'calculator', label: 'Հաշվիչ', icon: Calculator },
   { id: 'settings', label: 'Օգտատերեր և Դերեր', icon: Users },
-  { id: 'directory', label: 'Տեղեկատու', icon: HelpCircle },
+  { id: 'directory', label: 'Տեղեկատու', icon: Database },
 ];
 
 export default function Sidebar({ activeView, onNavigate, activeRole, onChangeRole, roles, isOpen, onToggle, unreadCount }) {
   // Define what each role can see
   const visibleItems = MENU_ITEMS.filter(item => {
     if (activeRole === 'Արտահանման վաճառքի մենեջեր') {
-      return ['notifications', 'directory'].includes(item.id);
+      return ['notifications', 'directory', 'sales'].includes(item.id);
     }
     
+    if (item.id === 'sales') {
+      return ['Սուպերադմին', 'Գլխավոր պահեստապետ', 'Տեսակի պատասխանատու', 'Պատրաստի արտադրանքի պատասխանատու'].includes(activeRole);
+    }
+
     if (item.id === 'weekly-plan') {
       return !['Հումքի պատասխանատու', 'Պատրաստի արտադրանքի պատասխանատու', 'Արտադրամասի աշխատակից'].includes(activeRole);
     }
