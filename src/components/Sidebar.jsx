@@ -84,57 +84,61 @@ export default function Sidebar({ activeView, onNavigate, activeRole, onChangeRo
         {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
       </button>
 
-      {visibleItems.map((item) => {
-        const Icon = item.icon;
-        const isActive = activeView === item.id;
-        const isNotif = item.id === 'notifications';
-        
-        return (
-          <button
-            key={item.id}
-            title={!isOpen ? item.label : ''}
-            onClick={() => onNavigate(item.id)}
-            className={`${isOpen ? 'w-4/5 px-4' : 'w-12 justify-center'} flex items-center gap-3 py-3 rounded-lg font-medium text-sm transition-colors relative ${
-              isActive 
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 bg-blue-50/50'
-            }`}
-          >
-            <div className="relative">
-              <Icon size={18} />
-              {!isOpen && isNotif && unreadCount > 0 && (
-                 <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 border border-white"></span>
+      {/* Navigation Items (Scrollable) */}
+      <div className="flex-1 w-full overflow-y-auto px-4 flex flex-col items-center gap-2 py-2 thin-scrollbar">
+        {visibleItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeView === item.id;
+          const isNotif = item.id === 'notifications';
+          
+          return (
+            <button
+              key={item.id}
+              title={!isOpen ? item.label : ''}
+              onClick={() => onNavigate(item.id)}
+              className={`${isOpen ? 'w-full px-4' : 'w-12 justify-center'} flex items-center gap-3 py-3 rounded-lg font-medium text-sm transition-colors relative flex-shrink-0 ${
+                isActive 
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
+                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 bg-blue-50/50'
+              }`}
+            >
+              <div className="relative flex-shrink-0">
+                <Icon size={18} />
+                {!isOpen && isNotif && unreadCount > 0 && (
+                   <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 border border-white"></span>
+                )}
+              </div>
+              {isOpen && <span className="truncate">{item.label}</span>}
+              
+              {/* Unread Badge (when open) */}
+              {isOpen && isNotif && unreadCount > 0 && (
+                 <span className="ml-auto bg-red-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded-full shadow-sm">
+                   {unreadCount}
+                 </span>
               )}
-            </div>
-            {isOpen && <span className="truncate">{item.label}</span>}
-            
-            {/* Unread Badge (when open) */}
-            {isOpen && isNotif && unreadCount > 0 && (
-               <span className="ml-auto bg-red-500 text-white font-bold text-[10px] px-1.5 py-0.5 rounded-full shadow-sm">
-                 {unreadCount}
-               </span>
-            )}
-          </button>
-        );
-      })}
+            </button>
+          );
+        })}
+      </div>
 
-      <div className={`mt-auto w-full pt-6 border-t border-slate-100 ${isOpen ? 'px-6' : 'px-2'}`}>
+      {/* Role Selection (Fixed at Bottom with padding) */}
+      <div className={`w-full py-4 border-t border-slate-100 flex-shrink-0 ${isOpen ? 'px-6' : 'px-2'}`}>
         {isOpen ? (
           <>
-            <label className="block text-xs font-semibold text-slate-500 mb-2 uppercase tracking-wide">
+            <label className="block text-[10px] font-black text-slate-400 mb-1 uppercase tracking-widest">
               Ակտիվ Դեր
             </label>
             <select 
               value={activeRole}
               onChange={(e) => onChangeRole(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-700 py-2 px-3 rounded shadow-sm focus:ring-2 focus:ring-blue-500 cursor-pointer outline-none"
+              className="w-full bg-slate-50 border border-slate-200 text-[13px] font-bold text-slate-700 py-2 px-3 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 cursor-pointer outline-none transition-all"
             >
-              {roles.map(r => <option key={r} value={r} className="font-sans">{r}</option>)}
+              {roles.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
           </>
         ) : (
           <div className="flex justify-center cursor-pointer hover:opacity-80 transition-opacity" title={`Ակտիվ Դեր: ${activeRole}`}>
-            <div className="bg-blue-100 text-blue-700 font-bold w-10 h-10 rounded-full flex items-center justify-center text-xs text-center leading-tight shadow-sm">
+            <div className="bg-blue-100 text-blue-700 font-bold w-10 h-10 rounded-full flex items-center justify-center text-[10px] text-center leading-tight shadow-sm border-2 border-white">
               {activeRole.substring(0,2).toUpperCase()}
             </div>
           </div>

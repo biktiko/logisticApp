@@ -13,7 +13,6 @@ const MOCK_PARTNERS = [
 
 const MOCK_CATEGORIES = [
   { id: 'C01', name: 'Հումք', sub: 'Հիմնական', type: 'product' },
-  { id: 'C02', name: 'Փաթեթավորում', sub: 'Առանց քյուառի', type: 'product' },
   { id: 'C03', name: 'Պատրաստի արտադրանք', sub: 'Ստանդարտ', type: 'product' },
 ];
 
@@ -413,11 +412,6 @@ function WarehousesTab({ isEditAllowed }) {
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">Պահեստներ և Լոկացիաներ</h1>
             <p className="text-sm font-medium text-slate-500 mt-1">Համակարգի ֆիզիկական և վիրտուալ պահեստները</p>
           </div>
-          {isEditAllowed && (
-            <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-indigo-200 transition-all">
-              <Plus size={16} /> Ավելացնել Պահեստ
-            </button>
-          )}
        </div>
 
        <div className="grid grid-cols-3 gap-6">
