@@ -99,13 +99,63 @@ export default function DirectoryManager({ activeRole }) {
 // ────────────────────────────────────────────────────────
 function CatalogTab({ isEditAllowed }) {
   const [search, setSearch] = useState('');
-  // Use INITIAL_STOCK mixed with PRODUCTION_PRODUCTS to get a unified catalog
-  const catalogList = INITIAL_STOCK; 
+  const [items, setItems] = useState(INITIAL_STOCK.map(i => ({ ...i, status: i.status || 'Ակտիվ' })));
+  
+  // Modal State
+  const [editItem, setEditItem] = useState(null); // null means closed, { id: 'new' } means creating
+  const [formData, setFormData] = useState({});
 
-  const filtered = catalogList.filter(i => 
+  const filtered = items.filter(i => 
     i.name.toLowerCase().includes(search.toLowerCase()) || 
     i.code.toLowerCase().includes(search.toLowerCase())
   );
+
+  const openCreateModal = () => {
+    setFormData({
+      id: `CAT-${Date.now()}`,
+      name: '',
+      code: '',
+      type: 'Հումք', // 'Հումք', 'Պատրաստի արտադրանք'
+      category: '', // Տեսակ
+      unit: 'կգ',
+      status: 'Ակտիվ', // Ակտիվ, Սառեցրած
+      group: '', // for Raw
+      subGroup: '', // for Raw
+      expNotifyDays: 30, // Պիտանելիության ծանուցման օր
+      avgCalcDays: 30, // Միջին ծախսի հաշվարկի օրաքանակ (N)
+      expenseNotifyDays: 5 // Ծախսի ծանուցման օր (D)
+    });
+    setEditItem('new');
+  };
+
+  const openEditModal = (item) => {
+    setFormData({
+      ...item,
+      avgCalcDays: item.avgCalcDays || 30,
+      expenseNotifyDays: item.expenseNotifyDays || 5
+    });
+    setEditItem(item.id);
+  };
+
+  const handleSave = () => {
+    if(!formData.name || !formData.code || !formData.category) return alert("Խնդրում ենք լրացնել պարտադիր դաշտերը (Անվանում, Կոդ, Տեսակ)");
+    
+    if (editItem === 'new') {
+      setItems([formData, ...items]);
+    } else {
+      setItems(items.map(i => i.id === formData.id ? formData : i));
+    }
+    setEditItem(null);
+  };
+
+  const toggleFreeze = (id) => {
+    setItems(items.map(i => {
+      if(i.id === id) {
+        return { ...i, status: i.status === 'Ակտիվ' ? 'Սառեցրած' : 'Ակտիվ' };
+      }
+      return i;
+    }));
+  };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-200">
@@ -126,7 +176,7 @@ function CatalogTab({ isEditAllowed }) {
             />
           </div>
           {isEditAllowed && (
-            <button className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-indigo-200 transition-all">
+            <button onClick={openCreateModal} className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md shadow-indigo-200 transition-all">
               <Plus size={16} /> Նոր ապրանք
             </button>
           )}
@@ -138,19 +188,20 @@ function CatalogTab({ isEditAllowed }) {
           <table className="w-full text-left border-collapse">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Կոդ</th>
+                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Կոդ / Կարգավիճակ</th>
                 <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Անվանում</th>
                 <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Տիպ</th>
-                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Կատեգորիա</th>
+                <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Տեսակ / Խումբ</th>
                 <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Չ/Մ</th>
                 <th className="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Գործող.</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filtered.map(item => (
-                <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                <tr key={item.id} className={`hover:bg-slate-50/50 transition-colors group ${item.status === 'Սառեցրած' ? 'opacity-50 grayscale' : ''}`}>
                   <td className="p-4">
-                    <span className="font-mono text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">{item.code}</span>
+                    <span className="font-mono text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600 block w-max">{item.code}</span>
+                    {item.status === 'Սառեցրած' && <span className="text-[10px] font-bold text-red-600 bg-red-50 mt-1 inline-block px-1.5 py-0.5 rounded uppercase">Սառեցրած</span>}
                   </td>
                   <td className="p-4 font-bold text-slate-800">{item.name}</td>
                   <td className="p-4">
@@ -158,15 +209,20 @@ function CatalogTab({ isEditAllowed }) {
                       {item.type}
                     </span>
                   </td>
-                  <td className="p-4 text-sm font-medium text-slate-600">{item.category} <span className="text-slate-400 mx-1">/</span> {item.categoryType}</td>
+                  <td className="p-4 text-sm font-medium text-slate-600">
+                    <div className="font-bold text-slate-700">{item.category}</div>
+                    {item.group && <div className="text-[10px] text-slate-400 uppercase mt-0.5">{item.group} {item.subGroup ? `(${item.subGroup})` : ''}</div>}
+                  </td>
                   <td className="p-4 text-sm font-bold text-slate-500 text-center">{item.unit}</td>
-                  <td className="p-4 text-right">
-                    <button className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" disabled={!isEditAllowed}>
-                      <Edit2 size={16} />
-                    </button>
-                    <button className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors ml-1" disabled={!isEditAllowed}>
-                      <Archive size={16} />
-                    </button>
+                  <td className="p-4 text-right align-middle">
+                    <div className="flex justify-end gap-1">
+                      <button onClick={() => openEditModal(item)} className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" disabled={!isEditAllowed}>
+                        <Edit2 size={16} />
+                      </button>
+                      <button onClick={() => toggleFreeze(item.id)} className={`p-1.5 rounded-lg transition-colors ${item.status === 'Սառեցրած' ? 'text-green-500 hover:bg-green-50' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}`} disabled={!isEditAllowed} title={item.status === 'Սառեցրած' ? 'Ապասառեցնել' : 'Սառեցնել'}>
+                        <Archive size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -174,9 +230,104 @@ function CatalogTab({ isEditAllowed }) {
           </table>
         </div>
       </div>
+
+      {editItem && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+           <div className="bg-white rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh]">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 rounded-t-2xl">
+                 <h2 className="text-xl font-black text-slate-800">{editItem === 'new' ? 'Ավելացնել Նոր Միավոր' : 'Խմբագրել Պարամետրերը'}</h2>
+                 <button onClick={() => setEditItem(null)} className="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-lg border border-slate-200">✕</button>
+              </div>
+
+              <div className="p-8 overflow-y-auto flex-1 grid grid-cols-2 gap-x-6 gap-y-5">
+                 <div className="col-span-2 flex gap-4 border-b border-slate-100 pb-5">
+                    <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                      <input type="radio" name="ptype" checked={formData.type === 'Հումք'} onChange={() => setFormData({...formData, type: 'Հումք'})} disabled={editItem !== 'new'}/>
+                      <span className="font-bold text-slate-700">Հումք</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+                      <input type="radio" name="ptype" checked={formData.type === 'Պատրաստի արտադրանք'} onChange={() => setFormData({...formData, type: 'Պատրաստի արտադրանք'})} disabled={editItem !== 'new'}/>
+                      <span className="font-bold text-slate-700">Պատրաստի Արտադրանք</span>
+                    </label>
+                 </div>
+
+                 <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Անվանում *</label>
+                    <input type="text" value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Օր. Արևածաղիկ 100գ աղի" />
+                 </div>
+                 
+                 <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Կոդ *</label>
+                    <input type="text" value={formData.code || ''} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="N001" />
+                 </div>
+
+                 <div className="col-span-2 sm:col-span-1">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Տեսակ *</label>
+                    <input type="text" value={formData.category || ''} onChange={e => setFormData({...formData, category: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Օր. Արևածաղիկներ, Չիպսեր" />
+                    <p className="text-[10px] text-slate-400 mt-1">Բարձրագույն մակարդակի խմբավորում:</p>
+                 </div>
+
+                 <div className="col-span-2 sm:col-span-1 border-b border-slate-100 pb-5 mb-1 sm:border-0 sm:pb-0 sm:mb-0">
+                    <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Չափման Միավոր</label>
+                    <select value={formData.unit || ''} onChange={e => setFormData({...formData, unit: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+                      <option>կգ</option>
+                      <option>հատ</option>
+                      <option>տուփ</option>
+                      <option>լիտր</option>
+                      <option>պարկ</option>
+                    </select>
+                 </div>
+
+                 {formData.type === 'Հումք' && (
+                   <React.Fragment>
+                     <div className="col-span-2 sm:col-span-1">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Խումբ (Ընտրովի)</label>
+                        <input type="text" value={formData.group || ''} onChange={e => setFormData({...formData, group: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Օր. Փաթեթավորում" />
+                     </div>
+                     <div className="col-span-2 sm:col-span-1">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Ենթախումբ</label>
+                        <input type="text" value={formData.subGroup || ''} onChange={e => setFormData({...formData, subGroup: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Օր. Քյուառով" />
+                     </div>
+                     <div className="col-span-2 sm:col-span-1">
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Պիտանելիության ծանուցում (Օրեր)</label>
+                        <input type="number" value={formData.expNotifyDays} onChange={e => setFormData({...formData, expNotifyDays: e.target.value})} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                     </div>
+                   </React.Fragment>
+                 )}
+
+                 <div className="col-span-2 mt-2 pt-4 border-t border-slate-100 flex flex-col gap-4">
+                   <h4 className="text-sm font-black text-indigo-700 uppercase tracking-widest">Միջին օրական ծախսի պարամետրեր</h4>
+                   <div className="grid grid-cols-2 gap-6">
+                     <div>
+                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1" title="Օրերի քանակ, որոնց ընթացքում հաշվարկվում է ծախսը">Հաշվարկի օրաքանակ (N)</label>
+                       <div className="flex items-center">
+                         <input type="number" value={formData.avgCalcDays} onChange={e => setFormData({...formData, avgCalcDays: e.target.value})} className="w-full border border-slate-300 rounded-l-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                         <span className="bg-slate-100 border-y border-r border-slate-300 px-3 py-2 rounded-r-lg text-sm text-slate-500 font-bold">Օր</span>
+                       </div>
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Ծախսի Ծանուցման շեմ (D)</label>
+                       <div className="flex items-center">
+                         <input type="number" value={formData.expenseNotifyDays} onChange={e => setFormData({...formData, expenseNotifyDays: e.target.value})} className="w-full border border-slate-300 rounded-l-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500" />
+                         <span className="bg-slate-100 border-y border-r border-slate-300 px-3 py-2 rounded-r-lg text-sm text-slate-500 font-bold">Օր</span>
+                       </div>
+                     </div>
+                   </div>
+                   <p className="text-xs text-slate-400 font-medium">Եթե պաշարների բավարարվածությունը գործնականում փոքր լինի D շեմից, գլխավոր պահեստապետը կստանա ծանուցում:</p>
+                 </div>
+              </div>
+
+              <div className="p-6 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 rounded-b-2xl shrink-0">
+                 <button onClick={() => setEditItem(null)} className="px-5 py-2.5 rounded-xl font-bold text-slate-500 hover:bg-slate-200 transition-colors">Չեղարկել</button>
+                 <button onClick={handleSave} className="px-8 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-transform hover:scale-105 active:scale-95">Պահպանել (Save)</button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
+
 
 // ────────────────────────────────────────────────────────
 // 2. ԲԱՂԱԴՐԱՏՈՄՍԵՐ (BOM)

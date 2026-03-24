@@ -99,10 +99,6 @@ export default function InboundManager({ activeRole }) {
           </h1>
         </div>
 
-        <div className="flex items-center gap-2 bg-slate-100 rounded-lg py-1.5 px-3 border border-slate-200">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">Դեր:</span>
-          <span className="text-sm font-semibold text-slate-800">{activeRole}</span>
-        </div>
       </div>
 
       <div className="px-8 pt-4 pb-0 bg-white border-b border-slate-200 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.02)] z-30 flex gap-4 overflow-x-auto flex-shrink-0">
